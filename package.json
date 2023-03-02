@@ -14,6 +14,9 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
-		"@pepperi-addons/scripts": "*"
+		"@pepperi-addons/debug-server": "^0.0.38",
+		"@pepperi-addons/scripts": "*",
+		"jwt-decode": "^3.1.2",
+		"node-fetch": "^3.3.0"
 	}
 }

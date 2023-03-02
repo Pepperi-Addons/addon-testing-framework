@@ -11,14 +11,14 @@
     "noImplicitAny": false,
     "allowJs": true,
     "resolveJsonModule": true,
-    "lib": [ "ES2019" ],
+    "lib": [ "ES2019", "DOM" ],
     "baseUrl": ".",
     "paths": {
       "mocha": [ "node_modules/mocha/mocha.js" ],
     }
   },
-  "exclude": [
-    "./build/**",
-    "./dist/**"
-  ]
+  "include": [
+    "src/**/*.ts",
+    "index.ts"
+  ],
 }

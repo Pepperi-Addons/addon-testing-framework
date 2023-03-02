@@ -11,6 +11,7 @@ export default [{
         format: 'cjs'
     }],
     external: [
+        "node-fetch",
     ],
     plugins: [
         typescriptPaths(),

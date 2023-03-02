@@ -1,6 +1,7 @@
 import 'mocha';
 import { expect } from 'chai';
 import { Reporter } from '../reporter';
+import { EventsService } from '../services';
 
 /**
  * Base class for all tests. This class is responsible for running the tests and reporting the results.
@@ -14,8 +15,17 @@ export abstract class BaseTest {
     
     abstract title: string;
 
+    eventService!: EventsService;
+
     constructor() {
         
+    }
+
+    /**
+     * This method is called after the services are initialized and before the tests are run.
+     * This can be overridden by subclasses to perform any initialization before the tests are run.
+     */
+    init() {
     }
 
     run() {
