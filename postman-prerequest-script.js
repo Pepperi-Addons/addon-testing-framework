@@ -12,7 +12,7 @@ function test(obj) {
     });
 
     for (const test of obj.tests) {
-        pm.test(`${test.superSuite} -> ${test.suite} -> ${test.title} took: ${test.duration}ms`, function () {
+        pm.test(`${test.title} took: ${test.duration}ms`, function () {
             pm.expect(test.passed, test.failure).to.be.true;
         });
     }

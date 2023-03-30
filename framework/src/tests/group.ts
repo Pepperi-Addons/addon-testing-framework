@@ -1,3 +1,4 @@
+import { ServicesContainer } from "src/services/services-container";
 import { BaseTest } from "./base";
 
 /**
@@ -9,10 +10,10 @@ export class TestGroup extends BaseTest {
         super();
     }
 
-    init(): void {
+    init(container: ServicesContainer): void {
+        super.init(container);
         for (const test of this.testList) {
-            test.eventService = this.eventService;
-            test.init();
+            test.init(this.container);
         }
     }
 

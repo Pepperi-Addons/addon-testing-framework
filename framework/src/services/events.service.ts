@@ -2,12 +2,17 @@ import { Client } from "@pepperi-addons/debug-server/dist";
 import { CPIService } from "./cpi.service";
 import { EventResultType, EventResultFactory, EventResult } from "../event-result";
 import { CPISessionService } from "./cpi-session.service";
+import { BaseService } from "./base-service";
 
-export class EventsService {
+export class EventsService extends BaseService {
+	
 	eventResultFactory: EventResultFactory;
 	cpiService?: CPIService;
+	cpiSessionService: CPISessionService;
 
-	constructor(protected client: Client, private cpiSessionService: CPISessionService) {
+	constructor(container) {
+		super(container);
+		this.cpiSessionService = this.container.get(CPISessionService);
 		this.eventResultFactory = new EventResultFactory();
 	}
 

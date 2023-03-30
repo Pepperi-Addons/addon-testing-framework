@@ -1,36 +1,31 @@
 import { Client } from "@pepperi-addons/debug-server/dist";
-import { CPISessionService } from "./services/cpi-session.service";
-import { EventsService } from "./services";
 import { BaseTest } from "./tests";
+import { ServicesContainer } from "./services/services-container";
 
 export class TestRunner {
 
-    eventService: EventsService;
-    cpiSessionService: CPISessionService;
+    servicesContainer: ServicesContainer;
 
-    constructor(client: Client, private test: BaseTest) {
-        this.cpiSessionService = new CPISessionService(client);
-        this.eventService = new EventsService(client, this.cpiSessionService);
+    constructor(private client: Client) {
+        this.servicesContainer = new ServicesContainer(client);
     }
 
-    async run() {
+    async run(test: BaseTest) {
         // setup
-        this.init();
+        this.init(test);
         
         // run the test
-        const res = await this.test.run();
+        const res = await test.run();
         
-        // TODO - add teardown
+        // teardown
+        await this.servicesContainer.teardown();
         
         // return the result
         return res;
     }
 
-    init() {
-        // set the services
-        this.test.eventService = this.eventService;
-        
-        // init the test
-        this.test.init();
+    init(test: BaseTest) {
+        // initialize the services container on the test
+        test.init(this.servicesContainer);
     }
 }

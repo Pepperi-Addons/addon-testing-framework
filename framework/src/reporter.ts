@@ -1,4 +1,5 @@
 import "mocha";
+import { TestResult } from "./tests-result";
 
 export class Reporter extends Mocha.reporters.Base {
 
@@ -25,7 +26,7 @@ export class Reporter extends Mocha.reporters.Base {
         });
         
         runner.once(Mocha.Runner.constants.EVENT_RUN_END, () => {
-            const obj = {
+            const obj: TestResult = {
                 stats: this.stats,
                 tests: tests.map(this.clean),
             };
@@ -43,13 +44,19 @@ export class Reporter extends Mocha.reporters.Base {
     }
 
     clean(test: Mocha.Test) {
+        // create the title
+        let title = test.title;
+        let parent = test.parent;
+        while (parent) {
+            title = parent.title + ' -> ' + title;
+            parent = parent.parent;
+        }
+
         return {
-            title: test.title,
-            duration: test.duration,
+            title: title,
+            duration: test.duration || 0,
             failed: test.isFailed(),
             passed: test.isPassed(),
-            suite: test.parent?.title,
-            superSuite: test.parent?.parent?.title,
             failure: test.err?.message,
         };
     }

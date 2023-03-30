@@ -3,19 +3,23 @@ import { CPIService } from "./cpi.service";
 import { HttpService } from "./http.service";
 import jwtDecode from 'jwt-decode';
 import { Client } from "@pepperi-addons/debug-server/dist";
+import { BaseService } from "./base-service";
 
 interface ParsedPepperiJWT {
     "pepperi.baseurl": string;
 }
 
-export class CPISessionService {
+export class CPISessionService extends BaseService {
 
     httpService: HttpService;
     papiBaseURL: string;
+	client: Client;
 
-	constructor(private client: Client) {
-		this.httpService = new HttpService(undefined, client.OAuthAccessToken);
-        this.papiBaseURL = jwtDecode<ParsedPepperiJWT>(client.OAuthAccessToken)["pepperi.baseurl"];
+	constructor(container) {
+		super(container);
+		this.client = this.container.client;
+		this.httpService = new HttpService(undefined, this.client.OAuthAccessToken);
+        this.papiBaseURL = jwtDecode<ParsedPepperiJWT>(this.client.OAuthAccessToken)["pepperi.baseurl"];
 	}
 
 	public async createSession(): Promise<CPIService> 
