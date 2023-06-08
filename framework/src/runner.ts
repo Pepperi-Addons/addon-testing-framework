@@ -1,4 +1,4 @@
-import { Client } from "@pepperi-addons/debug-server/dist";
+import { Client, Request } from "@pepperi-addons/debug-server/dist";
 import { BaseTest } from "./tests";
 import { ServicesContainer } from "./services/services-container";
 
@@ -6,8 +6,8 @@ export class TestRunner {
 
     servicesContainer: ServicesContainer;
 
-    constructor(private client: Client) {
-        this.servicesContainer = new ServicesContainer(client);
+    constructor(private client: Client, private request: Request) {
+        this.servicesContainer = new ServicesContainer(client, request);
     }
 
     async run(test: BaseTest) {

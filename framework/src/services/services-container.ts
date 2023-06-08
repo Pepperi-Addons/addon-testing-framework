@@ -1,4 +1,4 @@
-import { Client } from "@pepperi-addons/debug-server/dist";
+import { Client, Request } from "@pepperi-addons/debug-server/dist";
 import { BaseService } from "./base-service";
 
 type BaseServiceConstructor = new (_: ServicesContainer) => BaseService;
@@ -16,7 +16,7 @@ export class ServicesContainer {
 
     private services: BaseService[] = [];
 
-    constructor(public client: Client) {
+    constructor(public client: Client, public request: Request) {
 
     }
 
