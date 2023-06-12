@@ -12,7 +12,14 @@ export class AddonTestsService extends BaseService {
      * @returns The UUID of the testing framework addon.
      */
     addonUUID(): string {
-        return this.container.client.AddonUUID;
+        return this.container.request.header['X-Pepperi-OwnerID'];
+    }
+
+    /**
+     * @returns The secret key of the testing framework addon.
+     */
+    secretKey(): string {
+        return this.container.request.header['X-Pepperi-SecretKey'];
     }
 
 
@@ -24,8 +31,8 @@ export class AddonTestsService extends BaseService {
         return new PapiClient({
             baseURL: this.container.client.BaseURL,
             token: this.container.client.OAuthAccessToken,
-            addonUUID: this.container.client.AddonUUID,
-            addonSecretKey: this.container.client.AddonSecretKey,
+            addonUUID: this.addonUUID(),
+            addonSecretKey: this.secretKey(),
             actionUUID: this.container.client.ActionUUID,
         });
     }
