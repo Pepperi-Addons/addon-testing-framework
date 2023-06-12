@@ -1,4 +1,4 @@
-import { ServicesContainer } from "src/services/services-container";
+import { ServicesContainer } from "../services/services-container";
 import { BaseTest } from "./base";
 
 /**
