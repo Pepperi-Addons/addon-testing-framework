@@ -1,8 +1,11 @@
 import 'mocha';
-import { expect } from 'chai';
+import { expect, use } from 'chai';
+import chaiAsPromised from 'chai-as-promised';
 import { Reporter } from '../reporter';
 import { ServicesContainer } from '../services/services-container';
 import { TestResult } from '../tests-result';
+
+use(chaiAsPromised);
 
 /**
  * Base class for all tests. This class is responsible for running the tests and reporting the results.
