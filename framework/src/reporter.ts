@@ -7,27 +7,26 @@ export class Reporter extends Mocha.reporters.Base {
         super(runner, options);
 
         const tests: Mocha.Test[] = [];
-        const pending: Mocha.Test[] = [];
-        const failures: Mocha.Test[] = [];
-        const passes: Mocha.Test[] = [];
+        const hooks: Mocha.Hook[] = [];
         const callback = options.reporterOptions.callback;
         
         runner.on(Mocha.Runner.constants.EVENT_TEST_END, function (test) {
             tests.push(test);
-        });
-        runner.on(Mocha.Runner.constants.EVENT_TEST_PASS, function (test) {
-            passes.push(test);
+            const mark = test.isPassed() ? '\u2705' : '\u274C';
+            console.log(`Reporter: ${mark} ${test.title} finished with status ${test.state} in ${test.duration}ms`);
         });
         runner.on(Mocha.Runner.constants.EVENT_TEST_FAIL, function (test) {
-            failures.push(test);
+            console.error(`Reporter: ${test.title} failed with error: ${test.err?.message} in ${test.duration}ms`);
         });
-        runner.on(Mocha.Runner.constants.EVENT_TEST_PENDING, function (test) {
-            pending.push(test);
+        runner.on(Mocha.Runner.constants.EVENT_HOOK_BEGIN, function (hook: Mocha.Hook) {
+            hooks.push(hook);
         });
         
         runner.once(Mocha.Runner.constants.EVENT_RUN_END, () => {
+            
             const obj: TestResult = {
                 stats: this.stats,
+                hooks: hooks.map(this.clean),
                 tests: tests.map(this.clean),
             };
             if (callback) {
@@ -43,10 +42,11 @@ export class Reporter extends Mocha.reporters.Base {
         });
     }
 
-    clean(test: Mocha.Test) {
+    clean(test: Mocha.Test | Mocha.Hook) {
         // create the title
         let title = test.title;
         let parent = test.parent;
+        const failed = test.state === 'failed';
         while (parent) {
             title = parent.title + ' -> ' + title;
             parent = parent.parent;
@@ -55,9 +55,11 @@ export class Reporter extends Mocha.reporters.Base {
         return {
             title: title,
             duration: test.duration || 0,
-            failed: test.isFailed(),
-            passed: test.isPassed(),
-            failure: test.err?.message,
+            failed: failed,
+            passed: !failed,
+            // for some reason hooks don't have err property exposed but that is where the error is
+            // so let's downcast to any and hope for the best
+            failure: (test as any).err?.message,
         };
     }
 }

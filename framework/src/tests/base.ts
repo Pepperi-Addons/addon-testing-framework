@@ -33,11 +33,25 @@ export abstract class BaseTest {
         this.container = container;
     }
 
+    /**
+     * This can be overridden by subclasses to perform any setup before the tests are run.
+     * eg. setup the root suite with a beforeAll hook, or set the timeout of the root suite.
+     * @param root The root suite that will contain all the tests.
+     */
+    protected setupRoot(root: Mocha.Suite) {
+        
+    }
+
     run() {
         return new Promise<TestResult>((resolve, reject) => {
             let res: TestResult;
             const mocha = this.createMocha(x => res = x);
             const root = mocha.suite;
+            
+            // let the subclass do custom setup
+            this.setupRoot(root);
+            
+            // the context is the current suite that the tests are being added to
             let context: Mocha.Suite | undefined = root;
             
             // define the describe and it functions that will be used to populate the tests

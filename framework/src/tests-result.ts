@@ -7,4 +7,11 @@ export interface TestResult {
         passed: boolean;
         failure?: string;
     }[];
+    hooks: {
+        title: string;
+        duration: number;
+        failed: boolean;
+        passed: boolean;
+        failure?: string;
+    }[];
 }
