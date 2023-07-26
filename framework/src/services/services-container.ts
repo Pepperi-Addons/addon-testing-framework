@@ -20,13 +20,16 @@ export class ServicesContainer {
 
     }
 
-    get<T extends BaseServiceConstructor>(serviceClass: T): InstanceType<T> {
+    get<T extends BaseServiceConstructor, Y extends T>(serviceClass: T, localServiceClass?: Y): InstanceType<T> {
+        // if debug mode is on, use the local debug service class if it is passed in
+        const classToInit = this.client.isDebug && localServiceClass ? localServiceClass : serviceClass;
+
         // check if the service is already initialized
-        let serviceInstance: BaseService | undefined = this.services.find(s => s instanceof serviceClass);
+        let serviceInstance: BaseService | undefined = this.services.find(s => s instanceof classToInit);
         
         // if the service is not initialized, initialize it
         if (!serviceInstance) {
-            serviceInstance = new serviceClass(this);
+            serviceInstance = new classToInit(this);
             this.services.push(serviceInstance);
         }
 
