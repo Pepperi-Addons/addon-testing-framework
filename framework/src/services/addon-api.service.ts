@@ -21,7 +21,7 @@ export class AddonAPIService extends BaseService {
 
     constructor(container: ServicesContainer) {
         super(container);
-        this.httpService = new HttpService(this.container.client.BaseURL, this.container.client.OAuthAccessToken);
+        this.httpService = new HttpService(undefined, this.container.client.OAuthAccessToken);
     }
 
     /**
@@ -58,7 +58,7 @@ export class AddonAPIService extends BaseService {
      * @returns the full url to send the request to eg. 'addons/api/12345678-1234-1234-1234-123456789012/api/foo'
      */
     protected buildURL(relativeURL: string) {
-        return path.posix.join('addons/api', this.addonUUID, relativeURL);
+        return this.container.client.BaseURL + path.posix.join('/addons/api', this.addonUUID, relativeURL);
     }
 
     /**
