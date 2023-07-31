@@ -24,7 +24,7 @@ export class HttpService {
         }
         
         const t0 = performance.now();
-        const response = await fetch(url, {
+        const response = await fetch(apiURL, {
             method: method,
             body: body ? JSON.stringify(body) : undefined,
             headers: requestHeaders
