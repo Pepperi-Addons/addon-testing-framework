@@ -1,5 +1,5 @@
 import { EventsService } from "../services"
-import { DialogClientAction } from "./actions"
+import { DialogClientAction, HUDClientAction } from "./actions"
 import { FilePickerClientAction } from "./actions/file-picker.client-action"
 import { ScanBarcodeClientAction } from "./actions/scan-barcode.client-action"
 import { Finish } from "./finish"
@@ -12,7 +12,7 @@ const actions = () => {
         'Dialog': DialogClientAction,
         'FilePicker': FilePickerClientAction,
         'GeoLocation': Finish,
-        'HUD': Finish,
+        'HUD': HUDClientAction,
         'Modal': Finish,
         'Navigation': Finish,
         'UserEvent': Finish,

@@ -1,8 +1,8 @@
-import { Client } from "@pepperi-addons/debug-server/dist";
 import { CPIService, LocalCPIService } from "./cpi.service";
 import { EventResultType, EventResultFactory, EventResult } from "../event-result";
 import { CPISessionService } from "./cpi-session.service";
 import { BaseService } from "./base-service";
+
 
 export class EventsService extends BaseService {
 	

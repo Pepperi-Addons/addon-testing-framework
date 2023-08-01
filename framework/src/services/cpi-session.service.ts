@@ -4,6 +4,7 @@ import { HttpService } from "./http.service";
 import jwtDecode from 'jwt-decode';
 import { Client } from "@pepperi-addons/debug-server/dist";
 import { BaseService } from "./base-service";
+import { ServicesContainer } from "./services-container";
 
 interface ParsedPepperiJWT {
     "pepperi.baseurl": string;
@@ -15,7 +16,7 @@ export class CPISessionService extends BaseService {
     papiBaseURL: string;
 	client: Client;
 
-	constructor(container) {
+	constructor(container: ServicesContainer) {
 		super(container);
 		this.client = this.container.client;
 		this.httpService = new HttpService(undefined, this.client.OAuthAccessToken);
