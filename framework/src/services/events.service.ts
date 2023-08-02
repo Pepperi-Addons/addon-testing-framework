@@ -1,5 +1,5 @@
 import { Client } from "@pepperi-addons/debug-server/dist";
-import { CPIService } from "./cpi.service";
+import { CPIService, LocalCPIService } from "./cpi.service";
 import { EventResultType, EventResultFactory, EventResult } from "../event-result";
 import { CPISessionService } from "./cpi-session.service";
 import { BaseService } from "./base-service";
@@ -50,4 +50,22 @@ export class EventsService extends BaseService {
 	*/
 	public async registerToUserEvents(userEvents: Array<string>) {
 	}
+
+	/**
+	 *	Cache the service so that the Session won't be initialized on each call.
+	 */
+	shouldCache(): boolean {
+		return true;
+	}
+}
+
+/**
+ * A service for interacting with the Event Mechanism running locally on a developer machine.
+ */
+export class LocalEventsService extends EventsService {
+	
+	async initCPIService(): Promise<void> {
+		this.cpiService = new LocalCPIService(this.container.client);
+	}
+
 }

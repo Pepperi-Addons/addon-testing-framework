@@ -50,3 +50,23 @@ export class CPIService {
         return eventRes.Data;
     }
 }
+
+/**
+ * A service for interacting with the CPI running locally on a developer machine.
+ */
+export class LocalCPIService extends CPIService {
+
+    constructor(client: Client) {
+        super(client, '', '');
+        const localCPIBaseURL = process.env.LOCAL_CPI_BASE_URL || 'http://localhost:8088';
+        this.httpService = new HttpService(localCPIBaseURL, '');
+    }
+
+    async emitEvent(eventKey: string, eventData: unknown): Promise<EventResponse> {
+        const res = await this.httpService.post('/debugger/emit_event', {
+            EventKey: eventKey,
+            EventData: eventData
+        })
+        return res;
+    }
+}
