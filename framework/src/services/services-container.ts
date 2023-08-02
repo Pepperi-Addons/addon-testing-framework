@@ -20,6 +20,20 @@ export class ServicesContainer {
 
     }
 
+    /**
+     * Get a service from the container to use in the tests.
+     * If the service should be cached, it will be cached and returned on subsequent calls.
+     * @param serviceClass the class of the service to get
+     * @param localServiceClass the class of the service to get in case debug mode is on
+     * @returns An instance of the service
+     * @example
+     * ```typescript
+     * const apiService = this.container.get(AddonAPIService);
+     * 
+     * // for debug mode
+     * const apiService = this.container.get(AddonAPIService, AddonAPIServiceDebug);
+     * ```
+     */
     get<T extends BaseServiceConstructor, Y extends T>(serviceClass: T, localServiceClass?: Y): InstanceType<T> {
         // if debug mode is on, use the local debug service class if it is passed in
         const classToInit = this.client.isDebug && localServiceClass ? localServiceClass : serviceClass;
@@ -30,7 +44,11 @@ export class ServicesContainer {
         // if the service is not initialized, initialize it
         if (!serviceInstance) {
             serviceInstance = new classToInit(this);
-            this.services.push(serviceInstance);
+            
+            // cache the service if necessary
+            if (serviceInstance.shouldCache()) {
+                this.services.push(serviceInstance);
+            }
         }
 
         // return the service
