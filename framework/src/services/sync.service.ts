@@ -2,8 +2,6 @@ import { EventResult } from "src/event-result";
 import { BaseService } from "./base-service";
 import { EventsService } from "./events.service";
 
-import { nanoid } from 'nanoid'
-
 
 export interface SyncResult
 {
@@ -18,7 +16,7 @@ export class SyncService  extends BaseService
 	 * Emits a request to perform a sync operation.
 	 * @param {boolean} allowContinueInBackground - A flag indicating whether the sync operation can continue in the background. Default is false. 
 	 * @param {boolean} abortExisting - A flag indicating whether to abort an existing sync operation. Default is false.
-	 * @returns {boolean} A flag indicating whether the sync operation was successful.
+	 * @returns {Promise<SyncResult>} A promise that resolves to SyncResult object with the sync result.
 	 */
 	public async sync(allowContinueInBackground: boolean = false, abortExisting: boolean = false): Promise<SyncResult>
 	{
@@ -28,7 +26,7 @@ export class SyncService  extends BaseService
 			abortExisting: abortExisting,
 		}));
 
-		const hudKey = nanoid();
+		const hudKey = new Date().toISOString();
 
 		while(syncEventResult.type !== 'Finish')
 		{
