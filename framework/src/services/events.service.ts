@@ -50,6 +50,13 @@ export class EventsService extends BaseService {
 	*/
 	public async registerToUserEvents(userEvents: Array<string>) {
 	}
+
+	/**
+	 *	Cache the service so that the Session won't be initialized on each call.
+	 */
+	shouldCache(): boolean {
+		return true;
+	}
 }
 
 /**

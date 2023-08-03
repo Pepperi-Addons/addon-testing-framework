@@ -26,4 +26,14 @@ export abstract class BaseService {
     async teardown() {
 
     }
+
+    /**
+     * This method is call by the @ServicesContainer to determine if the service should be cached.
+     * Services that hold data than needs to be cleaned up should be cached.
+     * Additionally, services that are expensive to initialize should be cached.
+     * @returns Whether or not the service should be cached.
+     */
+    shouldCache() {
+        return false;
+    }
 }
