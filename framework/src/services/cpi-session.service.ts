@@ -1,5 +1,5 @@
 
-import { CPIService } from "./cpi.service";
+import { CPASService } from "./cpas.service";
 import { HttpService } from "./http.service";
 import jwtDecode from 'jwt-decode';
 import { Client } from "@pepperi-addons/debug-server/dist";
@@ -23,7 +23,7 @@ export class CPISessionService extends BaseService {
         this.papiBaseURL = jwtDecode<ParsedPepperiJWT>(this.client.OAuthAccessToken)["pepperi.baseurl"];
 	}
 
-	public async createSession(): Promise<CPIService> 
+	public async createSession(): Promise<CPASService> 
 	{
         const webAPIBaseURL = await this.getWebAPIBaseURL();
 		const url = `${webAPIBaseURL}/CreateSession`;
@@ -56,7 +56,7 @@ export class CPISessionService extends BaseService {
 			throw new Error(`${maxNumberOfAttempts} tries to create a session failed.`);
 		}
 
-		return new CPIService(this.client, webAPIBaseURL, accessToken);
+		return new CPASService(this.client, webAPIBaseURL, accessToken);
 	}
 
 	protected async getWebAPIBaseURL(): Promise<string> {

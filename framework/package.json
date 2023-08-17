@@ -1,12 +1,12 @@
 {
   "name": "@pepperi-addons/addon-testing-framework",
-  "version": "0.0.22",
+  "version": "0.0.24",
   "description": "using mocha within pepperi addons",
   "main": "dist/index.js",
-  "types": "build/index.d.ts",
+  "types": "build/framework/index.d.ts",
   "files": [
     "dist/index.js",
-    "build/**/**.d.ts"
+    "build/framework/**/**.d.ts"
   ],
   "scripts": {
     "compile": "tsc",

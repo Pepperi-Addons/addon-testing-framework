@@ -7,8 +7,7 @@ export async function load(configuration: any) {
 
 export const router = Router();
 
-router.post('/Sync', async (req, res) => {
-    debugger;
+router.post('/sync', async (req, res) => {
     const syncOptions: SyncOptions = {
         abortExisting: req.body.AbortExisting,
         allowContinueInBackground: req.body.AllowContinueInBackground,
@@ -20,6 +19,7 @@ router.post('/Sync', async (req, res) => {
 
     if(client)
     {
+        console.log(`Sending sync request with options: ${JSON.stringify(syncOptions)}`)
         syncResult = await client.sync(syncOptions);
     }
     else
@@ -29,7 +29,7 @@ router.post('/Sync', async (req, res) => {
         throw new Error(errorMessage);
     }
 
-    return {
-        SyncResult: JSON.stringify(syncResult)
-    };
+    res.json({
+        SyncResult: syncResult
+    })
 });
