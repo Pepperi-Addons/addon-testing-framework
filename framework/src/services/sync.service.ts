@@ -12,7 +12,8 @@ export interface SyncResult
 
 export class SyncService  extends BaseService
 {
-    /**
+    protected readonly AddonUUID = "d541b959-87af-4d18-9215-1b30dbe1bcf4";
+	/**
 	 * Emits a request to perform a sync operation.
 	 * @param {boolean} allowContinueInBackground - A flag indicating whether the sync operation can continue in the background. Default is false. 
 	 * @param {boolean} abortExisting - A flag indicating whether to abort an existing sync operation. Default is false.
@@ -21,34 +22,17 @@ export class SyncService  extends BaseService
 	public async sync(allowContinueInBackground: boolean = false, abortExisting: boolean = false): Promise<SyncResult>
 	{
 		const eventService = this.container.get(EventsService);
-        let syncEventResult: EventResult = (await eventService.emitEvent('Sync', {
-			allowContinueInBackground: allowContinueInBackground,
-			abortExisting: abortExisting,
-		}));
+		const cpiService = await eventService.cpiSessionService.createSession();
 
-		const hudKey = new Date().toISOString();
-
-		while(syncEventResult.type !== 'Finish')
-		{
-			// The event response is a HUD.
-			// Keep poling until we get a finish event
-			if(syncEventResult.type === 'HUD')
-			{
-				// sleep for Interval
-				const secondInMs = 1000;
-				const intervalInMs = syncEventResult.data.Interval ? syncEventResult.data.Interval * secondInMs : 2 * secondInMs;
-				await new Promise(resolve => setTimeout(resolve, intervalInMs));
-
-				// poll for the HUD
-				syncEventResult = await syncEventResult.setResult({
-					Success: true,
-					HUDKey: hudKey
-				})
-			}
-		}
+		const syncRequestBody = {
+			AllowContinueInBackground: allowContinueInBackground,
+			AbortExisting: abortExisting
+		};
+		
+		const addonApiResult = await cpiService.addonAPI(this.AddonUUID, '/Sync', syncRequestBody);
 
 		// Parse the result
-		const syncResult: SyncResult = syncEventResult.data.SyncResult ? JSON.parse(syncEventResult.data.SyncResult) : {success: false, finish: false};
+		const syncResult: SyncResult = addonApiResult.SyncResult ? JSON.parse(addonApiResult.SyncResult) : {success: false, finish: false};
 
 		return syncResult;
 	}
