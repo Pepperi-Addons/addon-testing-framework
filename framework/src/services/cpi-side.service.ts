@@ -88,8 +88,6 @@ export class CPISideService extends BaseService {
 	 */
 	public async sync(allowContinueInBackground: boolean = false, abortExisting: boolean = false): Promise<SyncResult>
 	{
-		await this.initCPIService();
-
 		const syncRequestBody = {
 			AllowContinueInBackground: allowContinueInBackground,
 			AbortExisting: abortExisting
