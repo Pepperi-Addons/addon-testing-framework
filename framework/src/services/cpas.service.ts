@@ -11,7 +11,7 @@ export interface EventResponse {
  * A service for interacting with the CPI under a specific session
  * This service should be created using the {@link CpiSessionService} class.
  */
-export class CPIService {
+export class CPASService {
 
     httpService: HttpService;
 
@@ -34,27 +34,12 @@ export class CPIService {
         
         return JSON.parse(response.Value);
     }
-
-    async addonAPI(addonUUID: string, url: string, body: any): Promise<any> {
-        const eventRes = await this.emitEvent('AddonAPI', {
-            AddonUUID: addonUUID,
-            RelativeURL: url,
-            Method: 'POST',
-            Body: body
-        });
-
-        if (eventRes.Type !== 'Finish') {
-            throw new Error(`AddonAPI event has returned a client action of type ${eventRes.Type}, consider using an event loop`);
-        }
-
-        return eventRes.Data;
-    }
 }
 
 /**
  * A service for interacting with the CPI running locally on a developer machine.
  */
-export class LocalCPIService extends CPIService {
+export class LocalCPASService extends CPASService {
 
     constructor(client: Client) {
         super(client, '', '');

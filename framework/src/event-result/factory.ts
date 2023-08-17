@@ -1,5 +1,5 @@
-import { EventsService } from "../services"
-import { DialogClientAction } from "./actions"
+import { CPISideService } from "../services"
+import { DialogClientAction, HUDClientAction } from "./actions"
 import { FilePickerClientAction } from "./actions/file-picker.client-action"
 import { ScanBarcodeClientAction } from "./actions/scan-barcode.client-action"
 import { Finish } from "./finish"
@@ -12,7 +12,7 @@ const actions = () => {
         'Dialog': DialogClientAction,
         'FilePicker': FilePickerClientAction,
         'GeoLocation': Finish,
-        'HUD': Finish,
+        'HUD': HUDClientAction,
         'Modal': Finish,
         'Navigation': Finish,
         'UserEvent': Finish,
@@ -26,7 +26,7 @@ export class EventResultFactory {
 
     actions = actions()
 
-    create(eventService: EventsService, data: any, callbackKey: string, actionType: EventResultType): any {
-        return new this.actions[actionType](eventService, actionType, data, callbackKey)
+    create(cpiSideService: CPISideService, data: any, callbackKey: string, actionType: EventResultType): any {
+        return new this.actions[actionType](cpiSideService, actionType, data, callbackKey)
     }
 }

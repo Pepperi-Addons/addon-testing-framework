@@ -1,9 +1,9 @@
-import { EventsService } from "../services/events.service";
+import { CPISideService } from "../services/cpi-side.service";
 import { EventResultCast, EventResultType as EventResultType } from "./factory";
 
 export abstract class EventResult {
 
-	constructor(protected eventsService: EventsService, public type: EventResultType, public data: any, public callbackKey: string) {
+	constructor(protected cpiSideService: CPISideService, public type: EventResultType, public data: any, public callbackKey: string) {
 	}
 
    /**
@@ -12,7 +12,7 @@ export abstract class EventResult {
 	* @returns A Promise that resolves to an instance of EventResult.
 	*/
 	public async setResult(result: any): Promise<EventResult> {
-		return await this.eventsService.emitEvent(this.callbackKey, result);
+		return await this.cpiSideService.emitEvent(this.callbackKey, result);
 	}
 
 	cast<type extends EventResultType>() {
