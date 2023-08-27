@@ -4,6 +4,9 @@ import { CPISessionService } from "./cpi-session.service";
 import { BaseService } from "./base-service";
 import { AddonUUID } from "../../../addon.config.json";
 import { Finish } from "../event-result/finish";
+import { ClientApiService, IApiCallHandler } from "./clientApi.service";
+import { IContext } from "@pepperi-addons/cpi-node/build/cpi-side/events";
+import { ServicesContainer } from "./services-container";
 
 export interface SyncResult {
 	success: boolean;
@@ -13,21 +16,23 @@ export interface SyncResult {
 /**
  * A service for interacting with an addons CPI Side
  */
-export class CPISideService extends BaseService {
+export class CPISideService extends BaseService implements IApiCallHandler{
 	
 	eventResultFactory: EventResultFactory;
-	cpiService?: CPASService;
+	cpasService?: CPASService;
 	cpiSessionService: CPISessionService;
+	pepperi: ClientApiService
 
-	constructor(container) {
+	constructor(container: ServicesContainer) {
 		super(container);
 		this.cpiSessionService = this.container.get(CPISessionService);
 		this.eventResultFactory = new EventResultFactory();
+		this.pepperi = new ClientApiService(this);
 	}
 
-	async initCPIService() {
-		if (!this.cpiService) {
-			this.cpiService = await this.cpiSessionService.createSession();
+	async initCPASService() {
+		if (!this.cpasService) {
+			this.cpasService = await this.cpiSessionService.createSession();
 		}
 	}
 
@@ -39,11 +44,11 @@ export class CPISideService extends BaseService {
 	 * @param actionHandler a function to handle any client actions that return before the Addon API returns it's result
 	 * @returns the Addon API result
 	 */
-	async addonAPI(addonUUID: string, url: string, body: any = {}, actionHandler?: (action: EventResult) => Promise<Finish>): Promise<any> {
+	async addonAPI(addonUUID: string, url: string, body: any = {}, method: string, actionHandler?: (action: EventResult) => Promise<Finish>): Promise<any> {
         let eventRes = await this.emitEvent('AddonAPI', {
             AddonUUID: addonUUID,
             RelativeURL: url,
-            Method: 'POST',
+            Method: method,
             Body: body
         });
 
@@ -66,10 +71,10 @@ export class CPISideService extends BaseService {
     **/
 	public async emitEvent(eventKey: string, eventData: any): Promise<EventResult> {
 		// make sure the CPI service is initialized
-		await this.initCPIService();
+		await this.initCPASService();
 		
 		// emit the event
-		const eventResponse = await this.cpiService!.emitEvent(eventKey, eventData);
+		const eventResponse = await this.cpasService!.emitEvent(eventKey, eventData);
 
 		const data = eventResponse.Data || {};
 		const callback = eventResponse.Callback || '';
@@ -93,7 +98,7 @@ export class CPISideService extends BaseService {
 			AbortExisting: abortExisting
 		};
 		
-		const addonApiResult = await this.addonAPI(AddonUUID, '/addon-cpi/sync', syncRequestBody, async (action) => {
+		const addonApiResult = await this.addonAPI(AddonUUID, '/addon-cpi/sync', syncRequestBody, "POST", async (action) => {
 			// The event response is a HUD.
 			// Keep poling until we get a finish event
 			while(action.type !== 'Finish') {	
@@ -123,6 +128,12 @@ export class CPISideService extends BaseService {
 		return syncResult;
 	}
 
+	public async handleApiCall(addonUUID: string, url: string, method: string, body: any, context: IContext | undefined):Promise<any>
+	{
+		const apiCallResult = await this.addonAPI(addonUUID, url, body, method);
+		return apiCallResult;
+	}
+
    /**
 	* Registers for user events.
 	* @param userEvents The list of user events to subscribe to.
@@ -144,8 +155,8 @@ export class CPISideService extends BaseService {
  */
 export class LocalCPISideService extends CPISideService {
 	
-	async initCPIService(): Promise<void> {
-		this.cpiService = new LocalCPASService(this.container.client);
+	async initCPASService(): Promise<void> {
+		this.cpasService = new LocalCPASService(this.container.client);
 	}
 
 }
