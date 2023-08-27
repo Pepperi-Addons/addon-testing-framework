@@ -1,4 +1,5 @@
 export * from './cpi-side.service';
+export * from './client-api.service'
 export * from './cpi-session.service';
 export * from './tests.service';
 export * from './cpas.service';

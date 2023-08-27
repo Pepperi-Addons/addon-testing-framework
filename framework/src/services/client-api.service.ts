@@ -31,14 +31,7 @@ export class ClientApiService
     };
 
     constructor(protected iApiCallHandler: IApiCallHandler)
-    {
-        // Dynamically expose keys as public properties
-        // This is done just for convenience, so that whoever holds this class
-        // and exposes it won't end up having another reference.
-        Object.keys(this.clientApi).forEach(key => {
-            this[key] = this.clientApi[key];
-        });
-    }
+    {}
 
     protected encodeQueryParams(params: any) {
         const ret: string[] = [];

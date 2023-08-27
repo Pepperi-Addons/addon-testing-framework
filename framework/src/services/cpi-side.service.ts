@@ -4,7 +4,7 @@ import { CPISessionService } from "./cpi-session.service";
 import { BaseService } from "./base-service";
 import { AddonUUID } from "../../../addon.config.json";
 import { Finish } from "../event-result/finish";
-import { ClientApiService, IApiCallHandler } from "./clientApi.service";
+import { ClientApiService, IApiCallHandler } from "./client-api.service";
 import { IContext } from "@pepperi-addons/cpi-node/build/cpi-side/events";
 import { ServicesContainer } from "./services-container";
 
@@ -21,7 +21,7 @@ export class CPISideService extends BaseService implements IApiCallHandler{
 	eventResultFactory: EventResultFactory;
 	cpasService?: CPASService;
 	cpiSessionService: CPISessionService;
-	pepperi: ClientApiService
+	public pepperi: ClientApiService
 
 	constructor(container: ServicesContainer) {
 		super(container);
