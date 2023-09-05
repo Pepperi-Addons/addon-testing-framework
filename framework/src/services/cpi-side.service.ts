@@ -13,6 +13,8 @@ export interface SyncResult {
     finish: boolean;
 }
 
+type SyncType = "sync" | "resync"
+
 /**
  * A service for interacting with an addons CPI Side
  */
@@ -93,16 +95,37 @@ export class CPISideService extends BaseService implements IApiCallHandler{
 	 */
 	public async sync(allowContinueInBackground: boolean = false, abortExisting: boolean = false): Promise<SyncResult>
 	{
+		const syncType: SyncType = "sync";
+		const syncResult: SyncResult = await this.executeSync(allowContinueInBackground, abortExisting, syncType);
+
+		return syncResult;
+	}
+
+	/**
+	 * Emits a request to perform a resync operation.
+	 * @param {boolean} allowContinueInBackground - A flag indicating whether the resync operation can continue in the background. Default is false. 
+	 * @param {boolean} abortExisting - A flag indicating whether to abort an existing resync operation. Default is false.
+	 * @returns {Promise<SyncResult>} A promise that resolves to SyncResult object with the resync result.
+	 */
+	 public async resync(allowContinueInBackground: boolean = false, abortExisting: boolean = false): Promise<SyncResult>
+	 {
+		 const syncType: SyncType = "resync";
+		 const syncResult: SyncResult = await this.executeSync(allowContinueInBackground, abortExisting, syncType);
+ 
+		 return syncResult;
+	 }
+
+	protected async executeSync(allowContinueInBackground: boolean, abortExisting: boolean, syncType: SyncType) {
 		const syncRequestBody = {
 			AllowContinueInBackground: allowContinueInBackground,
 			AbortExisting: abortExisting
 		};
-		
-		const addonApiResult = await this.addonAPI(AddonUUID, '/addon-cpi/sync', syncRequestBody, "POST", async (action) => {
+
+		const addonApiResult = await this.addonAPI(AddonUUID, `/addon-cpi/${syncType}`, syncRequestBody, "POST", async (action) => {
 			// The event response is a HUD.
 			// Keep poling until we get a finish event
-			while(action.type !== 'Finish') {	
-				if(action.type === 'HUD') {
+			while (action.type !== 'Finish') {
+				if (action.type === 'HUD') {
 					// sleep for Interval
 					const secondInMs = 1000;
 					const intervalInMs = action.data.Interval ? action.data.Interval * secondInMs : 2 * secondInMs;
@@ -112,19 +135,18 @@ export class CPISideService extends BaseService implements IApiCallHandler{
 					action = await action.setResult({
 						Success: true,
 						HUDKey: new Date().toISOString()
-					})
+					});
 				}
 				else {
 					throw new Error(`Got unexpected action ${action.type} from sync AddonAPI call`);
 				}
 			}
-			
+
 			return action;
 		});
 
 		// Parse the result
-		const syncResult: SyncResult = addonApiResult.SyncResult ?? {success: false, finish: false};
-
+		const syncResult: SyncResult = addonApiResult.SyncResult ?? { success: false, finish: false };
 		return syncResult;
 	}
 
