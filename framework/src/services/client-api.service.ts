@@ -43,228 +43,233 @@ export class ClientApiService
         return ret.join('&');
     }
 
-    public clientApi = {
-        scripts: {
-            key: (key: string) => {
-                return {
-                    run: async (data: any, context?: IContext) => {
-                        return this.clientApi.addons.api.uuid(this.mappedAddons.scripts).post({
-                            url: `addon-cpi/${key}/run`,
+    public getClientApi()
+    {
+        const clientApi = {
+            scripts: {
+                key: (key: string) => {
+                    return {
+                        run: async (data: any, context?: IContext) => {
+                            return clientApi.addons.api.uuid(this.mappedAddons.scripts).post({
+                                url: `addon-cpi/${key}/run`,
+                                body: {
+                                    Data: data,
+                                },
+                                context,
+                            });
+                        },
+                    };
+                },
+            },
+            files: {
+                assets: {
+                    get: async (key: string) => {
+                        return clientApi.addons.api.uuid(this.mappedAddons.pfs).post({
+                            url: `addon-cpi/get_file`,
                             body: {
-                                Data: data,
+                                AddonUUID: this.mappedAddons.assets, // assets addon uuid
+                                SchemaName: 'Assets',
+                                FileKey: key,
                             },
-                            context,
                         });
                     },
-                };
+                }
             },
-        },
-        files: {
-            assets: {
-                get: async (key: string) => {
-                    return this.clientApi.addons.api.uuid(this.mappedAddons.pfs).post({
-                        url: `addon-cpi/get_file`,
+            addons: {
+                configurations: {
+                    get: async (key: string) => {
+                        return await clientApi.addons.api.uuid(this.mappedAddons.configurations).get({
+                            url: `/addon-cpi/configurations?key=${key}`,
+                        });
+                    },
+                },
+                pfs: {
+                    uuid: (addonUUID: string) => {
+                        return {
+                            schema: (schemaName: string) => {
+                                return {
+                                    key: (keyName: string) => {
+                                        return {
+                                            get: async (): Promise<AddonFile> => {
+                                                return await clientApi.addons.api.uuid(this.mappedAddons.pfs).get({
+                                                    url: `/addon-cpi/file?addon_uuid=${addonUUID}&resource_name=${schemaName}&key=${keyName}`,
+                                                });
+                                            },
+                                        };
+                                    },
+                                    post: async (body: AddonFile): Promise<AddonFile> => {
+                                        return await clientApi.addons.api.uuid(this.mappedAddons.pfs).post({
+                                            url: `/addon-cpi/files?addon_uuid=${addonUUID}&resource_name=${schemaName}`,
+                                            body: body,
+                                        });
+                                    },
+                                    find: async (params: FileFindOptions | FindOptions): Promise<AddonFile[]> => {
+                                        let url = `/addon-cpi/files/find?addon_uuid=${addonUUID}&resource_name=${schemaName}`;
+                                        const query = this.encodeQueryParams(params);
+                                        url = query ? url + '&' + query : url;
+                                        return await clientApi.addons.api.uuid(this.mappedAddons.pfs).get({ url: url });
+                                    },
+                                };
+                            },
+                        };
+                    },
+                },
+                api: {
+                    uuid: (uuid: string) => {
+                        return {
+                            get: (options: AddonsApiGetParams) => {
+                                return this.iApiCallHandler.handleApiCall(uuid, options.url, 'GET', undefined, options.context);
+                            },
+                            post: (options: AddonsApiPostParams) => {
+                                return this.iApiCallHandler.handleApiCall(uuid, options.url, 'POST', options.body, options.context);
+                            },
+                        };
+                    },
+                },
+                data: {
+                    schemes: {
+                        get: async (options: AddonsDataSearchParams) => {
+                            return (await clientApi.addons.data.uuid(this.mappedAddons.adal).table('schemes').search(options)).Objects;
+                        },
+                    },
+                    uuid: (uuid: string) => {
+                        return {
+                            table: (tableName: string) => {
+                                return {
+                                    search: async (options: AddonsDataSearchParams): Promise<AddonsDataSearchResult> => {
+                                        return await clientApi.addons.api.uuid(this.mappedAddons.cpi_data).post({
+                                            url: `addon-cpi/search/${uuid}/${tableName}`,
+                                            body: options,
+                                        });
+                                    },
+                                    upsert: async (object: AddonData) => {
+                                        return await clientApi.addons.api.uuid(this.mappedAddons.cpi_data).post({
+                                            url: `addon-cpi/${uuid}/${tableName}`,
+                                            body: object,
+                                        });
+                                    },
+                                    key: (objectKey: string) => {
+                                        return {
+                                            get: async () => {
+                                                return await clientApi.addons.api.uuid(this.mappedAddons.cpi_data).get({
+                                                    url: `addon-cpi/${uuid}/${tableName}/${objectKey}`,
+                                                });
+                                            },
+                                        };
+                                    },
+                                };
+                            },
+                        };
+                    },
+                },
+                papi: {
+                    uuid: (uuid: string) => {
+                        return {
+                            resource: (resourceName: string) => {
+                                return {
+                                    search: async (options: AddonsDataSearchParams): Promise<AddonsDataSearchResult> => {
+                                        return await clientApi.addons.api.uuid(this.mappedAddons.core).post({
+                                            url: `addon-cpi/${resourceName}/search?addon_uuid=${uuid}`,
+                                            body: options,
+                                        });
+                                    },
+                                    upsert: async (object: AddonData) => {
+                                        return await clientApi.addons.api.uuid(this.mappedAddons.core).post({
+                                            url: `addon-cpi/${resourceName}?addon_uuid=${uuid}`,
+                                            body: object,
+                                        });
+                                    },
+                                    key: (objectKey: string) => {
+                                        return {
+                                            get: async () => {
+                                                return await clientApi.addons.api.uuid(this.mappedAddons.core).get({
+                                                    url: `addon-cpi/${resourceName}/key/${objectKey}?addon_uuid=${uuid}`,
+                                                });
+                                            },
+                                        };
+                                    },
+                                };
+                            },
+                        };
+                    },
+                },
+            },
+            slugs: {
+                getPage: async (slug: string): Promise<SlugsGetPageResult> => {
+                    return clientApi.addons.api.uuid(this.mappedAddons.slugs).post({
+                        url: 'addon-cpi/get_page',
                         body: {
-                            AddonUUID: this.mappedAddons.assets, // assets addon uuid
-                            SchemaName: 'Assets',
-                            FileKey: key,
+                            slug: slug,
                         },
+                    }) as Promise<SlugsGetPageResult>;
+                },
+            },
+            resources: {
+                resource: (resourceName: string) => {
+                    const baseURL = `addon-cpi/proxy/${resourceName}`;
+                    return {
+                        get: async (options: FindOptions): Promise<AddonData[]> => {
+                            const query = this.encodeQueryParams(options);
+                            return await clientApi.addons.api.uuid(this.mappedAddons.generic_resource).get({
+                                url: query ? `${baseURL}?${query}` : baseURL,
+                            });
+                        },
+                        post: async (object: AddonData): Promise<AddonData> => {
+                            return await clientApi.addons.api.uuid(this.mappedAddons.generic_resource).post({
+                                url: baseURL,
+                                body: object,
+                            });
+                        },
+                        key: (objectKey: string) => {
+                            return {
+                                get: async (): Promise<AddonData> => {
+                                    return await clientApi.addons.api.uuid(this.mappedAddons.generic_resource).get({
+                                        url: `${baseURL}/key/${objectKey}`,
+                                    });
+                                },
+                            };
+                        },
+                        unique: (fieldID: string) => {
+                            return {
+                                get: async (fieldValue: string): Promise<AddonData> => {
+                                    return await clientApi.addons.api.uuid(this.mappedAddons.generic_resource).get({
+                                        url: `${baseURL}/unique/${fieldID}/${fieldValue}`,
+                                    });
+                                },
+                            };
+                        },
+                        search: async (params: SearchBody): Promise<AddonsDataSearchResult> => {
+                            return await clientApi.addons.api.uuid(this.mappedAddons.generic_resource).post({
+                                url: `${baseURL}/search`,
+                                body: params,
+                            });
+                        },
+                    };
+                },
+            },
+            journey: {
+                log: async (params: JourneyTrackerRecord): Promise<void> => {
+                    const baseURL = 'addon-cpi/insert_record';
+                    await clientApi.addons.api.uuid(this.mappedAddons.journey_tracker).post({
+                        url: baseURL,
+                        body: params,
                     });
                 },
-            }
-        },
-        addons: {
-            configurations: {
-                get: async (key: string) => {
-                    return await this.clientApi.addons.api.uuid(this.mappedAddons.configurations).get({
-                        url: `/addon-cpi/configurations?key=${key}`,
+            },    
+            flows: {
+                run: async (data: RunFlowBody) => {
+                    return await clientApi.addons.api.uuid(this.mappedAddons.flows).post({
+                        url: '/flows/run_flow',
+                        body: {
+                            RunFlow: data.RunFlow,
+                            Data: data.Data,
+                        },
+                        context: data.context,
                     });
                 },
             },
-            pfs: {
-                uuid: (addonUUID: string) => {
-                    return {
-                        schema: (schemaName: string) => {
-                            return {
-                                key: (keyName: string) => {
-                                    return {
-                                        get: async (): Promise<AddonFile> => {
-                                            return await this.clientApi.addons.api.uuid(this.mappedAddons.pfs).get({
-                                                url: `/addon-cpi/file?addon_uuid=${addonUUID}&resource_name=${schemaName}&key=${keyName}`,
-                                            });
-                                        },
-                                    };
-                                },
-                                post: async (body: AddonFile): Promise<AddonFile> => {
-                                    return await this.clientApi.addons.api.uuid(this.mappedAddons.pfs).post({
-                                        url: `/addon-cpi/files?addon_uuid=${addonUUID}&resource_name=${schemaName}`,
-                                        body: body,
-                                    });
-                                },
-                                find: async (params: FileFindOptions | FindOptions): Promise<AddonFile[]> => {
-                                    let url = `/addon-cpi/files/find?addon_uuid=${addonUUID}&resource_name=${schemaName}`;
-                                    const query = this.encodeQueryParams(params);
-                                    url = query ? url + '&' + query : url;
-                                    return await this.clientApi.addons.api.uuid(this.mappedAddons.pfs).get({ url: url });
-                                },
-                            };
-                        },
-                    };
-                },
-            },
-            api: {
-                uuid: (uuid: string) => {
-                    return {
-                        get: (options: AddonsApiGetParams) => {
-                            return this.iApiCallHandler.handleApiCall(uuid, options.url, 'GET', undefined, options.context);
-                        },
-                        post: (options: AddonsApiPostParams) => {
-                            return this.iApiCallHandler.handleApiCall(uuid, options.url, 'POST', options.body, options.context);
-                        },
-                    };
-                },
-            },
-            data: {
-                schemes: {
-                    get: async (options: AddonsDataSearchParams) => {
-                        return (await this.clientApi.addons.data.uuid(this.mappedAddons.adal).table('schemes').search(options)).Objects;
-                    },
-                },
-                uuid: (uuid: string) => {
-                    return {
-                        table: (tableName: string) => {
-                            return {
-                                search: async (options: AddonsDataSearchParams): Promise<AddonsDataSearchResult> => {
-                                    return await this.clientApi.addons.api.uuid(this.mappedAddons.cpi_data).post({
-                                        url: `addon-cpi/search/${uuid}/${tableName}`,
-                                        body: options,
-                                    });
-                                },
-                                upsert: async (object: AddonData) => {
-                                    return await this.clientApi.addons.api.uuid(this.mappedAddons.cpi_data).post({
-                                        url: `addon-cpi/${uuid}/${tableName}`,
-                                        body: object,
-                                    });
-                                },
-                                key: (objectKey: string) => {
-                                    return {
-                                        get: async () => {
-                                            return await this.clientApi.addons.api.uuid(this.mappedAddons.cpi_data).get({
-                                                url: `addon-cpi/${uuid}/${tableName}/${objectKey}`,
-                                            });
-                                        },
-                                    };
-                                },
-                            };
-                        },
-                    };
-                },
-            },
-            papi: {
-                uuid: (uuid: string) => {
-                    return {
-                        resource: (resourceName: string) => {
-                            return {
-                                search: async (options: AddonsDataSearchParams): Promise<AddonsDataSearchResult> => {
-                                    return await this.clientApi.addons.api.uuid(this.mappedAddons.core).post({
-                                        url: `addon-cpi/${resourceName}/search?addon_uuid=${uuid}`,
-                                        body: options,
-                                    });
-                                },
-                                upsert: async (object: AddonData) => {
-                                    return await this.clientApi.addons.api.uuid(this.mappedAddons.core).post({
-                                        url: `addon-cpi/${resourceName}?addon_uuid=${uuid}`,
-                                        body: object,
-                                    });
-                                },
-                                key: (objectKey: string) => {
-                                    return {
-                                        get: async () => {
-                                            return await this.clientApi.addons.api.uuid(this.mappedAddons.core).get({
-                                                url: `addon-cpi/${resourceName}/key/${objectKey}?addon_uuid=${uuid}`,
-                                            });
-                                        },
-                                    };
-                                },
-                            };
-                        },
-                    };
-                },
-            },
-        },
-        slugs: {
-            getPage: async (slug: string): Promise<SlugsGetPageResult> => {
-                return this.clientApi.addons.api.uuid(this.mappedAddons.slugs).post({
-                    url: 'addon-cpi/get_page',
-                    body: {
-                        slug: slug,
-                    },
-                }) as Promise<SlugsGetPageResult>;
-            },
-        },
-        resources: {
-            resource: (resourceName: string) => {
-                const baseURL = `addon-cpi/proxy/${resourceName}`;
-                return {
-                    get: async (options: FindOptions): Promise<AddonData[]> => {
-                        const query = this.encodeQueryParams(options);
-                        return await this.clientApi.addons.api.uuid(this.mappedAddons.generic_resource).get({
-                            url: query ? `${baseURL}?${query}` : baseURL,
-                        });
-                    },
-                    post: async (object: AddonData): Promise<AddonData> => {
-                        return await this.clientApi.addons.api.uuid(this.mappedAddons.generic_resource).post({
-                            url: baseURL,
-                            body: object,
-                        });
-                    },
-                    key: (objectKey: string) => {
-                        return {
-                            get: async (): Promise<AddonData> => {
-                                return await this.clientApi.addons.api.uuid(this.mappedAddons.generic_resource).get({
-                                    url: `${baseURL}/key/${objectKey}`,
-                                });
-                            },
-                        };
-                    },
-                    unique: (fieldID: string) => {
-                        return {
-                            get: async (fieldValue: string): Promise<AddonData> => {
-                                return await this.clientApi.addons.api.uuid(this.mappedAddons.generic_resource).get({
-                                    url: `${baseURL}/unique/${fieldID}/${fieldValue}`,
-                                });
-                            },
-                        };
-                    },
-                    search: async (params: SearchBody): Promise<AddonsDataSearchResult> => {
-                        return await this.clientApi.addons.api.uuid(this.mappedAddons.generic_resource).post({
-                            url: `${baseURL}/search`,
-                            body: params,
-                        });
-                    },
-                };
-            },
-        },
-        journey: {
-            log: async (params: JourneyTrackerRecord): Promise<void> => {
-                const baseURL = 'addon-cpi/insert_record';
-                await this.clientApi.addons.api.uuid(this.mappedAddons.journey_tracker).post({
-                    url: baseURL,
-                    body: params,
-                });
-            },
-        },    
-        flows: {
-            run: async (data: RunFlowBody) => {
-                return await this.clientApi.addons.api.uuid(this.mappedAddons.flows).post({
-                    url: '/flows/run_flow',
-                    body: {
-                        RunFlow: data.RunFlow,
-                        Data: data.Data,
-                    },
-                    context: data.context,
-                });
-            },
-        },
-    };
+        };
+
+        return clientApi;
+    }
 }

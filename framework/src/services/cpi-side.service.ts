@@ -32,6 +32,10 @@ export class CPISideService extends BaseService implements IApiCallHandler{
 		this.pepperi = new ClientApiService(this);
 	}
 
+	public get clientApi() {
+		return this.pepperi.getClientApi();
+	}
+
 	async initCPASService() {
 		if (!this.cpasService) {
 			this.cpasService = await this.cpiSessionService.createSession();
@@ -63,7 +67,7 @@ export class CPISideService extends BaseService implements IApiCallHandler{
 			}
         }
 
-        return JSON.parse(eventRes.data.Value);
+        return eventRes.data.Value ? JSON.parse(eventRes.data.Value) : {};
     }
 
 	/**
@@ -146,7 +150,18 @@ export class CPISideService extends BaseService implements IApiCallHandler{
 		});
 
 		// Parse the result
-		const syncResult: SyncResult = addonApiResult.SyncResult ?? { success: false, finish: false };
+		let syncResult: SyncResult;
+		if(addonApiResult?.SyncResult)
+		{
+			syncResult = addonApiResult.SyncResult;
+		}
+		else
+		{
+			// This section should be deleted once https://pepperi.atlassian.net/browse/DI-25052 is resolved.
+			console.error(`SyncResult object wasn't returned. Assuming Sync terminated successfully.`);
+			syncResult = { success: true, finish: true };
+		}
+
 		return syncResult;
 	}
 
