@@ -4,30 +4,41 @@ import { CPISessionService } from "./cpi-session.service";
 import { BaseService } from "./base-service";
 import { AddonUUID } from "../../../addon.config.json";
 import { Finish } from "../event-result/finish";
+import { ClientApiService, IApiCallHandler } from "./client-api.service";
+import { IContext } from "@pepperi-addons/cpi-node/build/cpi-side/events";
+import { ServicesContainer } from "./services-container";
 
 export interface SyncResult {
 	success: boolean;
     finish: boolean;
 }
 
+type SyncType = "sync" | "resync"
+
 /**
  * A service for interacting with an addons CPI Side
  */
-export class CPISideService extends BaseService {
+export class CPISideService extends BaseService implements IApiCallHandler{
 	
 	eventResultFactory: EventResultFactory;
-	cpiService?: CPASService;
+	cpasService?: CPASService;
 	cpiSessionService: CPISessionService;
+	public pepperi: ClientApiService
 
-	constructor(container) {
+	constructor(container: ServicesContainer) {
 		super(container);
 		this.cpiSessionService = this.container.get(CPISessionService);
 		this.eventResultFactory = new EventResultFactory();
+		this.pepperi = new ClientApiService(this);
 	}
 
-	async initCPIService() {
-		if (!this.cpiService) {
-			this.cpiService = await this.cpiSessionService.createSession();
+	public get clientApi() {
+		return this.pepperi.getClientApi();
+	}
+
+	async initCPASService() {
+		if (!this.cpasService) {
+			this.cpasService = await this.cpiSessionService.createSession();
 		}
 	}
 
@@ -39,11 +50,11 @@ export class CPISideService extends BaseService {
 	 * @param actionHandler a function to handle any client actions that return before the Addon API returns it's result
 	 * @returns the Addon API result
 	 */
-	async addonAPI(addonUUID: string, url: string, body: any = {}, actionHandler?: (action: EventResult) => Promise<Finish>): Promise<any> {
+	async addonAPI(addonUUID: string, url: string, body: any = {}, method: string, actionHandler?: (action: EventResult) => Promise<Finish>): Promise<any> {
         let eventRes = await this.emitEvent('AddonAPI', {
             AddonUUID: addonUUID,
             RelativeURL: url,
-            Method: 'POST',
+            Method: method,
             Body: body
         });
 
@@ -56,7 +67,7 @@ export class CPISideService extends BaseService {
 			}
         }
 
-        return JSON.parse(eventRes.data.Value);
+        return eventRes.data.Value ? JSON.parse(eventRes.data.Value) : {};
     }
 
 	/**
@@ -66,10 +77,10 @@ export class CPISideService extends BaseService {
     **/
 	public async emitEvent(eventKey: string, eventData: any): Promise<EventResult> {
 		// make sure the CPI service is initialized
-		await this.initCPIService();
+		await this.initCPASService();
 		
 		// emit the event
-		const eventResponse = await this.cpiService!.emitEvent(eventKey, eventData);
+		const eventResponse = await this.cpasService!.emitEvent(eventKey, eventData);
 
 		const data = eventResponse.Data || {};
 		const callback = eventResponse.Callback || '';
@@ -88,16 +99,37 @@ export class CPISideService extends BaseService {
 	 */
 	public async sync(allowContinueInBackground: boolean = false, abortExisting: boolean = false): Promise<SyncResult>
 	{
+		const syncType: SyncType = "sync";
+		const syncResult: SyncResult = await this.executeSync(allowContinueInBackground, abortExisting, syncType);
+
+		return syncResult;
+	}
+
+	/**
+	 * Emits a request to perform a resync operation.
+	 * @param {boolean} allowContinueInBackground - A flag indicating whether the resync operation can continue in the background. Default is false. 
+	 * @param {boolean} abortExisting - A flag indicating whether to abort an existing resync operation. Default is false.
+	 * @returns {Promise<SyncResult>} A promise that resolves to SyncResult object with the resync result.
+	 */
+	 public async resync(allowContinueInBackground: boolean = false, abortExisting: boolean = false): Promise<SyncResult>
+	 {
+		 const syncType: SyncType = "resync";
+		 const syncResult: SyncResult = await this.executeSync(allowContinueInBackground, abortExisting, syncType);
+ 
+		 return syncResult;
+	 }
+
+	protected async executeSync(allowContinueInBackground: boolean, abortExisting: boolean, syncType: SyncType) {
 		const syncRequestBody = {
 			AllowContinueInBackground: allowContinueInBackground,
 			AbortExisting: abortExisting
 		};
-		
-		const addonApiResult = await this.addonAPI(AddonUUID, '/addon-cpi/sync', syncRequestBody, async (action) => {
+
+		const addonApiResult = await this.addonAPI(AddonUUID, `/addon-cpi/${syncType}`, syncRequestBody, "POST", async (action) => {
 			// The event response is a HUD.
 			// Keep poling until we get a finish event
-			while(action.type !== 'Finish') {	
-				if(action.type === 'HUD') {
+			while (action.type !== 'Finish') {
+				if (action.type === 'HUD') {
 					// sleep for Interval
 					const secondInMs = 1000;
 					const intervalInMs = action.data.Interval ? action.data.Interval * secondInMs : 2 * secondInMs;
@@ -107,20 +139,36 @@ export class CPISideService extends BaseService {
 					action = await action.setResult({
 						Success: true,
 						HUDKey: new Date().toISOString()
-					})
+					});
 				}
 				else {
 					throw new Error(`Got unexpected action ${action.type} from sync AddonAPI call`);
 				}
 			}
-			
+
 			return action;
 		});
 
 		// Parse the result
-		const syncResult: SyncResult = addonApiResult.SyncResult ?? {success: false, finish: false};
+		let syncResult: SyncResult;
+		if(addonApiResult?.SyncResult)
+		{
+			syncResult = addonApiResult.SyncResult;
+		}
+		else
+		{
+			// This section should be deleted once https://pepperi.atlassian.net/browse/DI-25052 is resolved.
+			console.error(`SyncResult object wasn't returned. Assuming Sync terminated successfully.`);
+			syncResult = { success: true, finish: true };
+		}
 
 		return syncResult;
+	}
+
+	public async handleApiCall(addonUUID: string, url: string, method: string, body: any, context: IContext | undefined):Promise<any>
+	{
+		const apiCallResult = await this.addonAPI(addonUUID, url, body, method);
+		return apiCallResult;
 	}
 
    /**
@@ -144,8 +192,8 @@ export class CPISideService extends BaseService {
  */
 export class LocalCPISideService extends CPISideService {
 	
-	async initCPIService(): Promise<void> {
-		this.cpiService = new LocalCPASService(this.container.client);
+	async initCPASService(): Promise<void> {
+		this.cpasService = new LocalCPASService(this.container.client);
 	}
 
 }
