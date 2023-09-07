@@ -1,6 +1,6 @@
 {
   "name": "@pepperi-addons/addon-testing-framework",
-  "version": "0.0.26",
+  "version": "0.0.27",
   "description": "using mocha within pepperi addons",
   "main": "dist/index.js",
   "types": "build/framework/index.d.ts",
