@@ -1,6 +1,6 @@
 import '@pepperi-addons/cpi-node'
 import { SyncOptions, SyncResult } from '@pepperi-addons/cpi-node/build/cpi-side/app/components';
-import { Client } from '@pepperi-addons/cpi-node/build/cpi-side/events';
+import { Client, IClient } from '@pepperi-addons/cpi-node/build/cpi-side/events';
 
 export async function load(configuration: any) {
 }
@@ -11,7 +11,7 @@ router.post('/sync', async (req, res) => {
     const syncOptions: SyncOptions = {
         abortExisting: req.body.AbortExisting,
         allowContinueInBackground: req.body.AllowContinueInBackground,
-        showHUD: req.body.showHUD ?? false
+        showHUD: req.body.showHUD ?? true
     };
 
     const client = req.context?.client;
@@ -37,7 +37,7 @@ router.post('/resync', async (req, res) => {
     })
 });
 
-async function sync(client, syncOptions: SyncOptions, syncOperation: "sync" | "resync")
+async function sync(client: IClient | undefined, syncOptions: SyncOptions, syncOperation: "sync" | "resync")
 {
     let syncResult: SyncResult;
 
