@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/pepperi-addons/pep-mocha#readme",
   "dependencies": {
+    "@pepperi-addons/cpi-node": "^1.5.2",
     "@pepperi-addons/debug-server": "^0.0.39",
     "@pepperi-addons/papi-sdk": "^1.47.3",
     "@rollup/plugin-json": "^6.0.0",
