@@ -34,7 +34,7 @@ export class CPISessionService extends BaseService {
 
 		let accessToken = undefined;
 		let counter = 0;
-		const maxNumberOfAttempts = 10;
+		const maxNumberOfAttempts = 20;
 
 		// Use maxNumberOfAttempts to stop after too long an attempt to create a session.
 		while(!accessToken && counter < maxNumberOfAttempts)
