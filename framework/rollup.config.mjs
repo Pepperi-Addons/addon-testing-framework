@@ -11,7 +11,8 @@ export default [{
         format: 'cjs'
     }],
     external: [
-        "node-fetch",
+        // "node-fetch", // node-fetch should be an external dependency, but the Lambda puts it in a different place
+        // // until this is fixed, we'll just bundle it
     ],
     plugins: [
         typescriptPaths(),
