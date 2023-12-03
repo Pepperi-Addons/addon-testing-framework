@@ -32,6 +32,7 @@ export class CPASService {
             EventData: JSON.stringify(eventData)
         });
         
+        console.log('EmitEvent response', response);
         return JSON.parse(response.Value);
     }
 }

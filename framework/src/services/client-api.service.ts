@@ -16,6 +16,7 @@ export interface IApiCallHandler {
 
 export class ClientApiService
 {
+    public readonly iApiCallHandler: IApiCallHandler;
     protected readonly mappedAddons = {
         slugs: '4ba5d6f9-6642-4817-af67-c79b68c96977',
         scripts: '9f3b727c-e88c-4311-8ec4-3857bc8621f3',
@@ -30,10 +31,12 @@ export class ClientApiService
         configurations: '84c999c3-84b7-454e-9a86-71b7abc96554',
     };
 
-    constructor(protected iApiCallHandler: IApiCallHandler)
-    {}
+    constructor(iApiCallHandler: IApiCallHandler)
+    {
+        this.iApiCallHandler = iApiCallHandler;
+    }
 
-    protected encodeQueryParams(params: any) {
+    public encodeQueryParams(params: any): string {
         const ret: string[] = [];
     
         Object.keys(params).forEach((key) => {
@@ -93,6 +96,7 @@ export class ClientApiService
                                             get: async (): Promise<AddonFile> => {
                                                 return await clientApi.addons.api.uuid(this.mappedAddons.pfs).get({
                                                     url: `/addon-cpi/file?addon_uuid=${addonUUID}&resource_name=${schemaName}&key=${keyName}`,
+
                                                 });
                                             },
                                         };
