@@ -1,6 +1,6 @@
 {
   "name": "@pepperi-addons/addon-testing-framework",
-  "version": "0.0.27",
+  "version": "0.0.37",
   "description": "using mocha within pepperi addons",
   "main": "dist/index.js",
   "types": "build/framework/index.d.ts",
@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/pepperi-addons/pep-mocha#readme",
   "dependencies": {
+    "@pepperi-addons/cpi-node": "^1.5.2",
     "@pepperi-addons/debug-server": "^0.0.39",
     "@pepperi-addons/papi-sdk": "^1.47.3",
     "@rollup/plugin-json": "^6.0.0",
@@ -35,6 +36,7 @@
     "chai": "^4.3.7",
     "chai-as-promised": "^7.1.1",
     "mocha": "10.2.0",
+    "node-fetch": "^3.3.2",
     "typescript": "^4.9.4"
   },
   "devDependencies": {

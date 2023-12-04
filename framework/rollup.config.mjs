@@ -8,10 +8,12 @@ export default [{
     input: 'index.ts',
     output: [{
         dir: './dist/',
-        format: 'cjs'
+        format: 'cjs',
+            manualChunks: () => 'everything.js',
     }],
     external: [
-        "node-fetch",
+        // "node-fetch", // node-fetch should be an external dependency, but the Lambda puts it in a different place
+        // // until this is fixed, we'll just bundle it
     ],
     plugins: [
         typescriptPaths(),
