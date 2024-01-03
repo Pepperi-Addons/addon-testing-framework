@@ -1,7 +1,7 @@
 import { ServicesContainer } from "./services-container";
 import { Helper } from "@pepperi-addons/papi-sdk"
 
-const helper = new Helper();
+
 
 /**
  * @class BaseService
@@ -13,12 +13,12 @@ const helper = new Helper();
  * Services can implement a teardown method which will be called when the tests are finished.
  */
 export abstract class BaseService {
-
     /**
      * @constructor
      * @param container - The services container. Added so that the service can access other services.
      */
     constructor(protected container: ServicesContainer) {
+        const helper = new Helper();
         this.container.request.header = helper.normalizeHeaders(this.container.request.header);
     }
 
