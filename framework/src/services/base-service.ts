@@ -1,4 +1,7 @@
 import { ServicesContainer } from "./services-container";
+import { Helper } from "@pepperi-addons/papi-sdk"
+
+const helper = new Helper();
 
 /**
  * @class BaseService
@@ -16,7 +19,7 @@ export abstract class BaseService {
      * @param container - The services container. Added so that the service can access other services.
      */
     constructor(protected container: ServicesContainer) {
-        
+        this.container.request.header = helper.normalizeHeaders(this.container.request.header);
     }
 
     /**
