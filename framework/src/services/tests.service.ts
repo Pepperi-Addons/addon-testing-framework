@@ -12,14 +12,14 @@ export class AddonTestsService extends BaseService {
      * @returns The UUID of the testing framework addon.
      */
     addonUUID(): string {
-        return this.container.request.header['X-Pepperi-OwnerID'];
+        return this.container.request.header['x-pepperi-ownerid'];
     }
 
     /**
      * @returns The secret key of the testing framework addon.
      */
     secretKey(): string {
-        return this.container.request.header['X-Pepperi-SecretKey'];
+        return this.container.request.header['x-pepperi-secretkey'];
     }
 
 
