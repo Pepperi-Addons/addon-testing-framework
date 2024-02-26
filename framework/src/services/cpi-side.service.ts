@@ -66,7 +66,9 @@ export class CPISideService extends BaseService implements IApiCallHandler{
 				throw new Error(`AddonAPI event has returned a client action of type ${eventRes.type}, consider implementing an actionHandler`);
 			}
         }
-
+		if (eventRes.data.Success === false) {
+			throw new Error(`AddonAPI call failed: ${eventRes.data.Value}`);
+		}
         return eventRes.data.Value ? JSON.parse(eventRes.data.Value) : {};
     }
 
