@@ -16,7 +16,8 @@
     "Editors": [],
     "Dependencies": {},
     "CPISide": [
-      "addon-cpi.ts"
+      "addon-cpi.ts",
+      "addons-utils/my-addon/my-addon-cpi.ts"
     ]
   }
 }
