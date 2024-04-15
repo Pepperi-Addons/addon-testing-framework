@@ -25,8 +25,7 @@ cpi-side
 ```
 
 ## publishing
-To make sure that your addon will be published, you need to add it to the `CPISide` array in the `addon-config.json` file.\
-Make 
+To make sure that your addon will be published, you need to add it to the `CPISide` array in the `addon-config.json` file.
 
 ## debugging
 If you want to debug your addon, you need to replace the `FileName` in the `debugger-config.json` file with the name of your addon file.
