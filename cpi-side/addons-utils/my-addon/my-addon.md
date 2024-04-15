@@ -1,5 +1,4 @@
 # My Addon
-
 This example demonstrates an addon that wants to add some cpi-side capabilities for its tests.
 
 Note, only capabilities or function that are not common to all addons should be added in this approach.
@@ -26,7 +25,6 @@ cpi-side
 ```
 
 ## publishing
-
 To make sure that your addon will be published, you need to add it to the `CPISide` array in the `addon-config.json` file.\
 Make 
 
