@@ -7,15 +7,14 @@ export async function load(configuration: any) {
 export const router = Router();
 router.post('/manipulate_user_db_creation_date', async (req, res, next) => {
     try {
-        debugger
-        const schedulerService = new SchedulerService()
-        await schedulerService.manipulateUserDb(req.body)
+        const schedulerService = new SchedulerService();
+        await schedulerService.manipulateUserDb(req.body);
 
         res.json({
             Success: true
         })
     } catch (error: any) {
         console.error(`Error manipulating user db access and modification timestamps: ${error.message}`);
-        next(error)
+        next(error);
     }
 })

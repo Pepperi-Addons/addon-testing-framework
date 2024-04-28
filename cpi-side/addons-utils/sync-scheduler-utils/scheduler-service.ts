@@ -4,19 +4,19 @@ import path from 'path'
 export class SchedulerService {
 
     async manipulateUserDb(params): Promise<void>{
-        const userId: number = params.UserID
-        const distId: number = params.DistributorID
-        const date = new Date(params.SqliteTimeStamp)
+        const userId: number = params.UserID;
+        const distId: number = params.DistributorID;
+        const date = new Date(params.SqliteTimeStamp);
 
-        const dbPath = await this.getDbPath(distId, userId)
+        const dbPath = await this.getDbPath(distId, userId);
         await fs.promises.utimes(dbPath, date, date);
     }
 
     private async getDbPath(distId: number, userId: number): Promise<string> {
         let fullDbPath = '';
         try {
-            const rootPath: string = await global['app']['wApp'].constructor.getRootPath()
-            const iswebApp = await pepperi.environment.isWebApp()
+            const rootPath: string = await global['app']['wApp'].constructor.getRootPath();
+            const iswebApp = await pepperi.environment.isWebApp();
     
             const userDbPath = `${userId}.sqlite`;
             const distributorDir = iswebApp ? path.join(rootPath, '..', '..') : path.dirname(rootPath);
