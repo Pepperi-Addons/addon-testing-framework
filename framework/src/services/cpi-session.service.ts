@@ -61,7 +61,7 @@ export class CPISessionService extends BaseService {
 
 	protected async getWebAPIBaseURL(): Promise<string> {
 		const url = `/meta_data/flags/WebAppBaseURL`;
-		const webAppBaseURL = await this.httpService.get(url);
+		const webAppBaseURL = await this.httpService.get(this.papiBaseURL + url);
 		return `${webAppBaseURL}/Service1.svc/v1`;
 	}
 }
