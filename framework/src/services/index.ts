@@ -7,3 +7,5 @@ export * from './base-service';
 export * from './http.service';
 export * from './addon-api.service';
 export * from './services-container';
+export * from './resource-management';
+export * from './audit-log-polling.service';

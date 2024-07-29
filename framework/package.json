@@ -33,6 +33,7 @@
     "@types/chai-as-promised": "^7.1.5",
     "@types/mocha": "^10.0.1",
     "@types/node": "^18.11.18",
+    "async": "^3.2.5",
     "chai": "^4.3.7",
     "chai-as-promised": "^7.1.1",
     "mocha": "10.2.0",
@@ -42,6 +43,7 @@
   "devDependencies": {
     "@rollup/plugin-commonjs": "^24.0.1",
     "@rollup/plugin-node-resolve": "^15.0.1",
+    "@types/async": "^3.2.24",
     "rollup": "^3.12.1",
     "rollup-plugin-typescript-paths": "^1.4.0",
     "rollup-plugin-typescript2": "^0.34.1"
