@@ -35,7 +35,8 @@ The following is an overview of the project structure.
  He is pre-loaded with:
  - `UuidGenerator`: generates UUIDs.
  - `SchemesGenerator`: generates schemes.
- - `ResourceManagerService`: handles creating and cleaning up resources, available resource types:
+ - `AuditLogPollingService`: polls async jobs.
+ - `ResourceManagerService`: handles creating and cleaning up resources (that extends `IManageableResource`), available resource types:
      - `AdalTableResource`: ADAL resource (table).
 
 ## Debugging
