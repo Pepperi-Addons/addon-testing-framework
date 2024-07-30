@@ -1,8 +1,6 @@
 import { ServicesContainer } from "./services-container";
 import { Helper } from "@pepperi-addons/papi-sdk"
 
-
-
 /**
  * @class BaseService
  * @description
