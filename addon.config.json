@@ -18,7 +18,8 @@
     "CPISide": [
       "addon-cpi.ts",
       "addons-utils/my-addon/my-addon-cpi.ts",
-      "addons-utils/sync-scheduler-utils/sync-scheduler-cpi.ts"
+      "addons-utils/sync-scheduler-utils/sync-scheduler-cpi.ts",
+      "addons-utils/cpi-node-utils/cpi-node-cpi.ts"
     ]
   }
 }
