@@ -56,3 +56,9 @@ router.get('/cached_addons', async (req, res) => {
     const cachedAddons = cpinodeService.getCachedAddons();
     res.json({ cachedAddonsNames: cachedAddons });
 });
+
+router.get('/system_delimiter', async (req, res) => {
+    const cpinodeService = new CPINodeService();
+    const delimiter = cpinodeService.getSystemDelimiter();
+    res.json({ delimiter: delimiter });
+});

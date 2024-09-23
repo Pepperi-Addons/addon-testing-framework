@@ -1,5 +1,6 @@
 import {ADDON_TABLE_NAME, AddonMetaData, CPINodeAddonUUId,} from '../consts';
 import * as fs from "fs";
+import path from 'path';
 export class CPINodeService {
 
     async upsertRelation(relation: any) {
@@ -32,5 +33,9 @@ export class CPINodeService {
     getCachedAddons() {
         const cachedAddons = require.cache;
         return Object.keys(cachedAddons);
+    }
+
+    getSystemDelimiter() {
+        return path.sep;
     }
 }
