@@ -38,4 +38,8 @@ export class CPINodeService {
     getSystemDelimiter() {
         return path.sep;
     }
+
+    setDebugMode() {
+        global['cpiNodeDebug'] = true;
+    }
 }

@@ -18,6 +18,14 @@ router.post('/test_after_sync_relation', async (req, res) => {
     });
 });
 
+router.post('/set_debug_mode', async (req, res) => {
+    const cpiNodeService = new CPINodeService();
+    cpiNodeService.setDebugMode();
+    res.json({
+        Success: true
+    });
+});
+
 router.post('/test_validate_after_sync_relation_call', async (req, res) => {
     const cpiNodeService = new CPINodeService();
     const relation = await cpiNodeService.upsertRelation({
