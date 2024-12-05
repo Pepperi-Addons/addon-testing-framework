@@ -18,12 +18,33 @@ router.post('/test_after_sync_relation', async (req, res) => {
     });
 });
 
-router.post('/cpi_node_test_mode', async (req, res) => {
-    const cpiNodeService = new CPINodeService();
-    cpiNodeService.setCpiNodeTestMode();
-    res.json({
-        Success: true
-    });
+router.post('/cpi-node-test-mode', async (req, res) => {
+    try {
+        const cpiNodeService = new CPINodeService();
+        await cpiNodeService.setCpiNodeTestMode();
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error enabling CPI node test mode:', error);
+        res.status(500).json({ success: false, error: error });
+    }
+});
+
+
+router.get('/get-kms-parameter/:addonUUID/:key', async (req, res) => {
+    try {
+        const { addonUUID, key } = req.params; // Destructure params for clarity
+        const cpiNodeService = new CPINodeService();
+        const result = await cpiNodeService.getKmsParameterByObjectKey(addonUUID, key);
+
+        if (result) {
+            res.json(result);
+        } else {
+            res.status(404).json({ success: false, message: 'Parameter not found' });
+        }
+    } catch (error) {
+        console.error('Error fetching KMS parameter:', error);
+        res.status(500).json({ success: false, error: error });
+    }
 });
 
 router.post('/test_validate_after_sync_relation_call', async (req, res) => {

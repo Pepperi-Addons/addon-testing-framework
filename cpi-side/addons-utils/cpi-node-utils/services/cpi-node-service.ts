@@ -42,4 +42,8 @@ export class CPINodeService {
     setCpiNodeTestMode() {
         global['cpiNodeTestMode'] = true;
     }
+
+    async getKmsParameterByObjectKey(uuid: string, key: string) {
+        return await pepperi.addons.kms.uuid(uuid).parameters.key(key).get();
+    }
 }
