@@ -18,9 +18,9 @@ router.post('/test_after_sync_relation', async (req, res) => {
     });
 });
 
-router.post('/set_debug_mode', async (req, res) => {
+router.post('/cpi_node_test_mode', async (req, res) => {
     const cpiNodeService = new CPINodeService();
-    cpiNodeService.setDebugMode();
+    cpiNodeService.setCpiNodeTestMode();
     res.json({
         Success: true
     });

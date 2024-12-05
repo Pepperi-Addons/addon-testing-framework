@@ -39,7 +39,7 @@ export class CPINodeService {
         return path.sep;
     }
 
-    setDebugMode() {
-        global['cpiNodeDebug'] = true;
+    setCpiNodeTestMode() {
+        global['cpiNodeTestMode'] = true;
     }
 }
