@@ -18,10 +18,10 @@ router.post('/test_after_sync_relation', async (req, res) => {
     });
 });
 
-router.post('/cpi-node-test-mode', async (req, res) => {
+router.post('/cpi_node_test_mode', async (req, res) => {
     try {
         const cpiNodeService = new CPINodeService();
-        await cpiNodeService.setCpiNodeTestMode();
+        await cpiNodeService.setCpiNodeTestMode(req.body);
         res.json({ success: true });
     } catch (error) {
         console.error('Error enabling CPI node test mode:', error);
@@ -30,7 +30,7 @@ router.post('/cpi-node-test-mode', async (req, res) => {
 });
 
 
-router.get('/get-kms-parameter/:addonUUID/:key', async (req, res) => {
+router.get('/get_kms_parameter/:addonUUID/:key', async (req, res) => {
     try {
         const { addonUUID, key } = req.params; // Destructure params for clarity
         const cpiNodeService = new CPINodeService();
