@@ -39,8 +39,8 @@ export class CPINodeService {
         return path.sep;
     }
 
-    setCpiNodeTestMode() {
-        global['cpiNodeTestMode'] = true;
+    setCpiNodeTestMode(body) {
+        global['cpiNodeTestMode'] = body['cpiNodeTestMode'];
     }
 
     async getKmsParameterByObjectKey(uuid: string, key: string) {
