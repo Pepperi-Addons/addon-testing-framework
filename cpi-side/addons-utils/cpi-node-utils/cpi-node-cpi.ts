@@ -1,5 +1,5 @@
 import { Relation } from '@pepperi-addons/papi-sdk';
-import {CPI_NODE_VALIDATE_AFTER_SYNC_RELATION_CALL, VALIDATE_AFTER_SYNC_CALL_FIELD_NAME} from './consts';
+import { CPI_NODE_VALIDATE_AFTER_SYNC_RELATION_CALL, VALIDATE_AFTER_SYNC_CALL_FIELD_NAME } from './consts';
 import { CPINodeService } from './services/cpi-node-service';
 
 export async function load(configuration: any) {
@@ -91,3 +91,28 @@ router.get('/system_delimiter', async (req, res) => {
     const delimiter = cpinodeService.getSystemDelimiter();
     res.json({ delimiter: delimiter });
 });
+
+router.get('/transaction_scope_data_set/:uuid', async (req, res) => {
+    try {
+        const cpiNodeService = new CPINodeService();
+        const data = await cpiNodeService.getTransactionScopeItemsFields(req);
+        res.json({ data })
+    } catch (error) {
+        console.error('Error fetching transaction scope items fields:', error);
+        res.status(500).json({ success: false, error: error });
+    }
+
+});
+
+router.post('/transaction_scope_data_set', async (req, res) => {
+    try {
+        const cpiNodeService = new CPINodeService();
+        const data = await cpiNodeService.setTransactionScopeItemsFields(req);
+        res.json({ data })
+    } catch (error) {
+        console.error('Error in post transaction data set:', error);
+        res.status(500).json({ success: false, error: error });
+    }
+})
+
+
