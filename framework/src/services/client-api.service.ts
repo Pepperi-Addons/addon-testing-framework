@@ -29,6 +29,7 @@ export class ClientApiService
         journey_tracker: '41011fbf-debf-40d8-8990-767738b8af03',
         flows: 'dc8c5ca7-3fcc-4285-b790-349c7f3908bd',
         configurations: '84c999c3-84b7-454e-9a86-71b7abc96554',
+        kms: '8b4a1bd8-a2eb-4241-85ac-89c9e724e900',
     };
 
     constructor(iApiCallHandler: IApiCallHandler)
@@ -117,6 +118,29 @@ export class ClientApiService
                             },
                         };
                     },
+                },
+                kms: {
+                    uuid: (addonUUID: string) => {
+                        return {
+                            parameters: {
+                                key: (objectKey: string) => {
+                                    return {
+                                        get: async (): Promise<any> => {
+                                            return await clientApi.addons.api.uuid(this.mappedAddons.kms).get({
+                                                url: `/kms-cpi/kms/${addonUUID}/parameters/${objectKey}`,
+                                            });
+                                        },
+                                        upsert: async (object: any) => {
+                                            return clientApi.addons.api.uuid(this.mappedAddons.kms).post({
+                                                url: `/kms-cpi/kms/${addonUUID}/parameters/${objectKey}`,
+                                                body: object,
+                                            });
+                                        },
+                                    };
+                                },
+                            },
+                        };
+                    }
                 },
                 api: {
                     uuid: (uuid: string) => {

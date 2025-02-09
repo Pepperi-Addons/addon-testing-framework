@@ -55,7 +55,7 @@ export class CPINodeService {
         await pepperi.TransactionScope.Get(transaction!)
         if (transaction) {
             const fields = req.query.fields.split(',').map((field: string) => field.trim());
-            const ds = await transaction.transactionScope?.getDataSet(fields);
+            const ds = await transaction.transactionScope?.["getDataSet"](fields);
             if (ds) {
                 const ds2 = await ds.where((obj) =>
                     obj.UUID !== '00000000-0000-0000-0000-000000000000'
@@ -74,7 +74,7 @@ export class CPINodeService {
         if (transaction) {
             const fieldsArr = req.body.field;  // Assuming field is an array of objects like [{ FieldID: 'TSACurrencyAPI', newValue: 10 }, ...]
             const fieldIDs = fieldsArr.map(field => field.FieldID);
-            const ds = await transaction.transactionScope?.getDataSet([...fieldIDs, 'UUID']);
+            const ds = await transaction.transactionScope?.["getDataSet"]([...fieldIDs, 'UUID']);
             if (ds) {
                 for (const field of fieldsArr) {
                     // Update the field's value in all filtered objects
