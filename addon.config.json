@@ -1,6 +1,6 @@
 {
   "AddonUUID": "d541b959-87af-4d18-9215-1b30dbe1bcf4",
-  "AddonVersion": "0.0.15",
+  "AddonVersion": "0.0.17",
   "DebugPort": 4500,
   "WebappBaseUrl": "https://app.sandbox.pepperi.com",
   "DefaultEditor": "main",
@@ -19,7 +19,8 @@
       "addon-cpi.ts",
       "addons-utils/my-addon/my-addon-cpi.ts",
       "addons-utils/sync-scheduler-utils/sync-scheduler-cpi.ts",
-      "addons-utils/cpi-node-utils/cpi-node-cpi.ts"
+      "addons-utils/cpi-node-utils/cpi-node-cpi.ts",
+      "addons-utils/sync-utils/sync-cpi.ts"
     ]
   }
 }
