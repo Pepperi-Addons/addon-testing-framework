@@ -12,6 +12,6 @@ export async function load(configuration: any) {
 
 export const router = Router();
 router.get('/get_client_start_time', async (req, res, next) => {
-    const val = await pepperi.addons.kms.uuid(SyncAddonUUID).parameters.key('SyncClientStartTime').get();
-    return val.Value;
+    const val = (await pepperi.addons.kms.uuid(SyncAddonUUID).parameters.key('SyncClientStartTime').get()).Value;
+    res.json({ Value: val });
 });
